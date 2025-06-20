@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -12,10 +13,10 @@ import java.util.List;
 @Data
 public class VentaResponseDto {
 
-    private double sumaTotalPrecioUnitario;
-    private double sumaTotalPrecioVenta;
-    private double sumaTotalUtilidad;
-    private double sumaTotalDeTotales;
+    private BigDecimal sumaTotalPrecioUnitario;
+    private BigDecimal sumaTotalPrecioVenta;
+    private BigDecimal sumaTotalUtilidad;
+    private BigDecimal sumaTotalDeTotales;
     private List<VentaResponseBdDto> ventas;
 
 }

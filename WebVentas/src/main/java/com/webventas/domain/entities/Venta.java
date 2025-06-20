@@ -1,10 +1,13 @@
 package com.webventas.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -20,14 +23,8 @@ public class Venta {
     @Column(name = "FechaVenta")
     private Date fechaVenta;
 
-    @Column(name = "TipoComprobante")
-    private String tipoComprobante;
-
-    @Column(name = "NumeroComprobante")
-    private String numeroComprobante;
-
     @Column(name = "Total")
-    private Double total;
+    private BigDecimal total;
 
     @Column(name = "MetodoPago")
     private String metodoPago;
@@ -40,8 +37,12 @@ public class Venta {
     @JoinColumn(name = "idCliente")
     private Cliente cliente;
 
-    @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "idComprobante")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "IdComprobante", referencedColumnName = "IdComprobante", unique = true)
     private Comprobante comprobante;
+
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // Ignorar en JSON para evitar recursión si serializas Venta
+    private List<DetalleTransaccion> detalles;
 
 }

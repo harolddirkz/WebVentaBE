@@ -2,13 +2,15 @@ package com.webventas.domain.dto.request;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class VentaTransaccionRequest {
 
     private Long idProducto;
     private Integer cantidad;
-    private Double precioUnitario;
-    private Double precioVenta;
-    private Double importe;
-    private Double utilidad;
+    private BigDecimal precioUnitario;
+    private BigDecimal precioVenta;
+    private BigDecimal importe;
+    private BigDecimal utilidad;
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Entity
 @Table(name = "DetalleTransacciones")
@@ -19,25 +21,26 @@ public class DetalleTransaccion {
     private int cantidad;
 
     @Column(name = "PrecioUnitario")
-    private Double precioUnitario;
+    private BigDecimal precioUnitario;
 
     @Column(name = "PrecioVenta")
-    private Double precioVenta;
+    private BigDecimal precioVenta;
 
     @Column(name = "Importe")
-    private Double importe;
+    private BigDecimal importe;
 
     @Column(name = "Utilidad")
-    private Double utilidad;
+    private BigDecimal utilidad;
 
-    @Column(name = "IdReferencia")
-    private int idReferencia;
+    @Column(name = "TipoTransaccion")
+    private String tipoTransaccion;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "IdProducto")
     private Producto producto;
 
-    @Column(name = "TipoTransaccion")
-    private String tipoTransaccion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IdReferencia", referencedColumnName = "IdVenta", nullable = false)
+    private Venta venta;
 
 }

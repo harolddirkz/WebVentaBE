@@ -2,12 +2,16 @@ package com.webventas.application.controllers;
 
 import com.webventas.domain.dto.request.RegistrarVentaRequest;
 import com.webventas.domain.dto.response.VentaResponseDto;
+import com.webventas.domain.entities.Venta;
 import com.webventas.infraestructure.abstractServices.IVentaService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/sales")
@@ -31,5 +35,18 @@ public class VentaController {
             @RequestParam String fechaInicio,
             @RequestParam String fechaFin) {
         return ventaService.ventaEntreFechas(fechaInicio, fechaFin);
+    }
+
+    @PostMapping("/registrar")
+    public ResponseEntity<Venta> registrarVenta(@RequestBody RegistrarVentaRequest ventaDto) {
+        try {
+            Venta nuevaVenta = ventaService.registrarNuevaVenta(ventaDto);
+            return new ResponseEntity<>(nuevaVenta, HttpStatus.CREATED);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Cliente o usuario no encontrado
+        } catch (RuntimeException e) {
+            System.err.println("Error en el controlador al registrar venta: " + e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Otros errores
+        }
     }
 }
