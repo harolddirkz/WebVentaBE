@@ -8,6 +8,7 @@ import com.webventas.domain.entities.Producto;
 import com.webventas.domain.entities.Proveedor;
 import com.webventas.infraestructure.abstractServices.IProveedorService;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +46,11 @@ public class ProveedorController {
     @PutMapping("/actualizar")
     public void actualizarProveedor(@RequestBody ActualizarProveedorRequest request) {
         proveedorService.updateProveedor(request);
+    }
+
+    @GetMapping(value = "/create-proveedor-rapido")
+    public ResponseEntity<Proveedor> createProveedorRapido(@RequestParam String ruc) {
+        return ResponseEntity.ok(proveedorService.crearProveedorFast(ruc));
+
     }
 }

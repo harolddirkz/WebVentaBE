@@ -13,19 +13,26 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Proveedor {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IdProveedor")
     private Long idProveedor;
 
-    @Column(name = "NombreProveedor")
-    private String nombreProveedor;
+    @Column(name = "ruc")
+    private String ruc;
 
-    @Column(name = "Contacto")
-    private String contacto;
+    @Column(name = "RazonSocial")
+    private String razonSocial;
+
+    @Column(name = "NombreComercial")
+    private String nombreComercial;
 
     @Column(name = "Direccion")
     private String direccion;
+
+    @Column(name = "Telefono")
+    private String telefono;
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy="proveedor", cascade = CascadeType.ALL)
     @JsonIgnore

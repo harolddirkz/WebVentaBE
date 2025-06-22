@@ -50,7 +50,7 @@ public class ClienteController {
 
     @PostMapping(value = "/create-rapido")
     public ResponseEntity<Cliente> createClienteRapido(@Valid @RequestBody RequestClienteRapido request) {
-        return ResponseEntity.ok(clienteService.createFast(request));
+        return ResponseEntity.ok(clienteService.createClienteFast(request));
 
     }
 

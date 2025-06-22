@@ -26,11 +26,11 @@ public class CompraServiceImpl implements ICompraService {
     public void registrarCompra(RegistrarCompraRequest compra) {
         try {
             String productosJson = objectMapper.writeValueAsString(compra.getDetalles());
-            String sql = "CALL registrar_compra(?, ?, ?::TEXT, ?::TEXT,?::DECIMAL, ?::TEXT)";
+            String sql = "CALL sp_registrar_compra(?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(
                     sql,
-                    Integer.parseInt(String.valueOf(compra.getIdProveedor())),
-                    Integer.parseInt(String.valueOf(compra.getIdUsuario())),
+                    compra.getIdProveedor().intValue(),
+                    compra.getIdUsuario().intValue(),
                     compra.getTipoComprobante(),
                     compra.getNumeroComprobante(),
                     compra.getTotal(),
@@ -38,6 +38,7 @@ public class CompraServiceImpl implements ICompraService {
             );
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Error al registrar la compra: " + e.getMessage(), e);
         }
 
     }

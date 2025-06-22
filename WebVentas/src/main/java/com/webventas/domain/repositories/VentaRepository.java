@@ -17,7 +17,7 @@ public interface VentaRepository extends JpaRepository<Venta,Long> {
 
         SELECT p.nombreProducto, v.fechaVenta, v.idVenta, c.serieComprobante, c.numeroComprobante, dt.precioUnitario, dt.cantidad, dt.precioVenta, dt.utilidad,v.total
         FROM ventas v
-        INNER JOIN detalleTransacciones dt ON v.idVenta = dt.idreferencia
+        INNER JOIN detalleTransacciones dt ON v.idVenta = dt.idVentaRef
         INNER JOIN productos p ON dt.idproducto = p.idProducto
     	INNER JOIN comprobantes c ON v.idComprobante = c.idComprobante
         WHERE dt.tipoTransaccion = 'VENTA' AND DATE(v.fechaVenta) = DATE(:fechaVenta)
@@ -28,7 +28,7 @@ public interface VentaRepository extends JpaRepository<Venta,Long> {
 
         SELECT p.nombreProducto, v.fechaVenta, v.idVenta, c.serieComprobante, c.numeroComprobante, dt.precioUnitario, dt.cantidad, dt.precioVenta, dt.utilidad,v.total
         FROM ventas v
-        INNER JOIN detalleTransacciones dt ON v.idVenta = dt.idreferencia
+        INNER JOIN detalleTransacciones dt ON v.idVenta = dt.idVentaRef
         INNER JOIN productos p ON dt.idproducto = p.idProducto
     	INNER JOIN comprobantes c ON v.idComprobante = c.idComprobante
         WHERE dt.tipoTransaccion = 'VENTA'

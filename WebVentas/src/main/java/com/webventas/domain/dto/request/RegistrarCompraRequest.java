@@ -2,6 +2,8 @@ package com.webventas.domain.dto.request;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -10,7 +12,8 @@ public class RegistrarCompraRequest {
     private Long idUsuario;
     private String tipoComprobante;
     private String numeroComprobante;
-    private Double total;
+    private Date fechaCompra;
+    private BigDecimal total;
     List<CompraTransaccionRequest> detalles;
 
 }

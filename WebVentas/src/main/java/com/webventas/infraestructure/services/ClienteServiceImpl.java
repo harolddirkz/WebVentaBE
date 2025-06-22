@@ -69,7 +69,7 @@ public class ClienteServiceImpl implements IClienteService {
     }
 
     @Override
-    public Cliente createFast(RequestClienteRapido request) {
+    public Cliente createClienteFast(RequestClienteRapido request) {
         String nombreCompleto = dniService.obtenerNombreCompleto(request.getNumeroDocumento());
 
         Cliente cliente = new Cliente();
@@ -80,5 +80,7 @@ public class ClienteServiceImpl implements IClienteService {
         return clienteRepository.saveAndFlush(cliente);
 
     }
+
+
 
 }

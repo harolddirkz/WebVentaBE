@@ -2,6 +2,7 @@ package com.webventas.infraestructure.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webventas.domain.dto.response.ApiRucResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -46,4 +47,32 @@ public class DniService {
             throw new RuntimeException("Error al consumir el API", e);
         }
     }
+
+    public ApiRucResponseDto obtenerDatosPorRuc(String ruc) {
+        String url = "https://dniruc.apisperu.com/api/v1/ruc/" + ruc + "?token=" + apiToken;
+        System.out.println("url: " + url);
+
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new IllegalStateException("Respuesta HTTP inválida: " + response.getStatusCode());
+            }
+
+            JsonNode json = objectMapper.readTree(response.getBody());
+
+            return new ApiRucResponseDto(
+                    json.path("ruc").asText(),
+                    json.path("razonSocial").asText(),
+                    json.path("nombreComercial").asText(),
+                    json.path("direccion").asText(),
+                    json.path("telefono").asText()
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al consumir el API", e);
+        }
+    }
+
+
 }
