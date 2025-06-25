@@ -7,8 +7,10 @@ import com.webventas.domain.repositories.UsuarioRepository;
 import com.webventas.infraestructure.abstractServices.IUsuarioService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -17,6 +19,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UsuarioServiceImpl(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Usuario create(UsuarioRequest request) {
@@ -53,5 +62,31 @@ public class UsuarioServiceImpl implements IUsuarioService {
         usuario.setContrasena(request.getContrasena());
         usuarioRepository.saveAndFlush(usuario);
 
+    }
+
+    @Override
+    public Usuario crearUsuario(UsuarioRequest request) {
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombre(request.getNombre());
+        nuevoUsuario.setUsuario(request.getUsuario());
+        nuevoUsuario.setEmail(request.getEmail()); // Asegúrate de pedir el email en el request
+        nuevoUsuario.setRol(request.getRol());
+        nuevoUsuario.setFechaCreacion(LocalDateTime.now());
+        // ¡ENCRIPTAR LA CONTRASEÑA ANTES DE GUARDAR!
+        nuevoUsuario.setContrasenaHash(passwordEncoder.encode(request.getContrasena()));
+        return usuarioRepository.save(nuevoUsuario);
+    }
+
+    @Override
+    public Usuario findByUsuario(String usuario) {
+        Usuario user = usuarioRepository.findByUsuario(usuario);
+        if (usuario != null) {
+            return user;
+        }
+        return user;
+    }
+
+    public boolean verificarContrasena(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

@@ -22,7 +22,7 @@ public class UsuarioController {
 
     @PostMapping(value = "/create")
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioRequest request) {
-        return ResponseEntity.ok(usuarioService.create(request));
+        return ResponseEntity.ok(usuarioService.crearUsuario(request));
 
     }
 

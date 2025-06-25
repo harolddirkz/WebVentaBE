@@ -12,5 +12,7 @@ public interface IUsuarioService {
     void deleteUsuario(Long id);
     List<Usuario> findAllUsuarios();
     void updateUsuario(ActualizarUsuarioRequest request);
+    Usuario crearUsuario(UsuarioRequest request);
+    Usuario findByUsuario(String usuario);
 
 }
