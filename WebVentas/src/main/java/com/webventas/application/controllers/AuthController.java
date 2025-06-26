@@ -1,28 +1,27 @@
 package com.webventas.application.controllers;
 
-import com.webventas.domain.dto.request.AuthRequest; // Your DTO for login request
+import com.webventas.domain.dto.request.AuthRequest;
 import com.webventas.domain.dto.response.AuthenticationResponse;
 import com.webventas.infraestructure.services.CustomUserDetailsService;
-import com.webventas.utils.JwtUtil; // Your JWT utility class
+import com.webventas.utils.JwtUtil;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager; // Import this
-import org.springframework.security.authentication.BadCredentialsException; // Import this
-import org.springframework.security.authentication.DisabledException; // Import this
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Import this
-import org.springframework.security.core.userdetails.UserDetails; // Import this
-import org.springframework.security.core.GrantedAuthority; // Import this
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.stream.Collectors; // Import this
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000") // Keep CORS
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailsService userDetailsService; // Tu UserDetailsService
+    private final CustomUserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
     public AuthController(AuthenticationManager authenticationManager,
@@ -48,7 +47,6 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsuario());
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        // Puedes devolver un objeto con el token y cualquier otra información necesaria (ej. roles)
         return ResponseEntity.ok(new AuthenticationResponse(jwt, userDetails.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", "")).collect(Collectors.toList())));
     }

@@ -42,7 +42,7 @@ public class Venta {
     private Comprobante comprobante;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Ignorar en JSON para evitar recursión si serializas Venta
+    @JsonIgnore
     private List<DetalleTransaccion> detalles;
 
 }

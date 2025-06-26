@@ -22,5 +22,5 @@ public class UsuarioRequest implements Serializable {
     @NotBlank(message = "Es obligatorio ingresar una contraseña")
     private String contrasena;
 
-    private String email; // Para recuperación de contraseña
+    private String email;
 }

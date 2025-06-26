@@ -47,7 +47,6 @@ public class DetalleTransaccion {
     @JoinColumn(name = "IdCompraRef", referencedColumnName = "IdCompra", nullable = true)
     private Compra compra;
 
-    // Aquí la lógica para asegurar que solo una referencia esté presente
     @PrePersist @PreUpdate
     public void validarReferencias() {
         if ("VENTA".equals(this.tipoTransaccion)) {

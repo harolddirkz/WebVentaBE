@@ -19,8 +19,8 @@ public class ComprobanteServiceImpl implements IComprobanteService {
         try {
             tipoEnum = TipoComprobante.valueOf(tipo.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // En caso de valor inválido, puedes manejarlo como quieras
-            tipoEnum = TipoComprobante.DESCONOCIDO; // o lanza excepción si prefieres
+
+            tipoEnum = TipoComprobante.DESCONOCIDO;
         }
 
         TipoComprobante finalTipoEnum = tipoEnum;

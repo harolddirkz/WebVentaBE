@@ -43,10 +43,10 @@ public class VentaController {
             Venta nuevaVenta = ventaService.registrarNuevaVenta(ventaDto);
             return new ResponseEntity<>(nuevaVenta, HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Cliente o usuario no encontrado
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (RuntimeException e) {
             System.err.println("Error en el controlador al registrar venta: " + e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Otros errores
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

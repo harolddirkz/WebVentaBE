@@ -182,9 +182,9 @@ public class ProductoServiceImpl implements IProductoService {
                     request.getUltimoPrecioVenta()
             );
         } catch (DataAccessException e) {
-            // Log the error
+
             System.out.println("Error al actualizar el producto: " + e.getMessage());
-            throw e; // Re-throw the exception for Spring's transaction management
+            throw e;
         }
     }
 

@@ -32,13 +32,13 @@ public class Usuario {
     private String contrasena;
 
     @Column(nullable = false)
-    private String contrasenaHash; // Almacenaremos el hash aquí
+    private String contrasenaHash;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String email; // Para recuperación de contraseña
+    private String email;
 
     @Column(nullable = false)
-    private boolean habilitado = true; // Por defecto activo
+    private boolean habilitado = true;
 
     @Column(nullable = false)
     private LocalDateTime fechaCreacion;

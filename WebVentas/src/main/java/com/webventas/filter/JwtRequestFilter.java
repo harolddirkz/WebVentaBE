@@ -1,7 +1,7 @@
 package com.webventas.filter;
 
 import com.webventas.infraestructure.services.CustomUserDetailsService;
-import com.webventas.utils.JwtUtil; // Tu JwtUtil
+import com.webventas.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,11 +37,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // "Bearer " tiene 7 caracteres
+            jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                // Log the exception (e.g., Token expired, invalid token)
                 logger.error("Error extracting username from JWT token or token is invalid: " + e.getMessage());
             }
         }
@@ -52,7 +51,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 userDetails = this.userDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException e) {
                 logger.warn("User not found from JWT token: " + username);
-                // Continue filter chain without authentication
+
             }
 
             if (userDetails != null && jwtUtil.validateToken(jwt, userDetails)) {

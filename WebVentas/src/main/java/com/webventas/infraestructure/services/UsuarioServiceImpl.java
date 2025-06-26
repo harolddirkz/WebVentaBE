@@ -51,14 +51,13 @@ public class UsuarioServiceImpl implements IUsuarioService {
     public List<Usuario> getAllUsuarios(Boolean habilitado) {
         List<Usuario> usuarios;
         if (habilitado != null) {
-            usuarios = usuarioRepository.findByHabilitado(habilitado); // Necesitarás este método en el Repository
+            usuarios = usuarioRepository.findByHabilitado(habilitado);
         } else {
-            usuarios = usuarioRepository.findAll(); // Si habilitado es null, trae todos
+            usuarios = usuarioRepository.findAll();
         }
-        // Opcional: Si no quieres enviar la contraseña hasheada al frontend
+
         return usuarios.stream()
                 .map(usuario -> {
-                    // Crea una nueva instancia para evitar modificar el objeto persistido si se vuelve a usar
                     Usuario safeUser = new Usuario();
                     safeUser.setIdUsuario(usuario.getIdUsuario());
                     safeUser.setNombre(usuario.getNombre());
@@ -68,31 +67,27 @@ public class UsuarioServiceImpl implements IUsuarioService {
                     safeUser.setHabilitado(usuario.isHabilitado());
                     safeUser.setFechaCreacion(usuario.getFechaCreacion());
                     safeUser.setUltimaConexion(usuario.getUltimaConexion());
-                    // NO copiar contrasena ni contrasenaHash
                     return safeUser;
                 })
                 .collect(Collectors.toList());
     }
 
-    @Transactional // Agrega @Transactional si tu lógica lo requiere para operaciones de DB
+    @Transactional
     public void updateUsuario(ActualizarUsuarioRequest request) {
         Usuario usuarioExistente = usuarioRepository.findById(request.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + request.getIdUsuario()));
 
-        // Actualizar campos que siempre se pueden cambiar
         usuarioExistente.setNombre(request.getNombre());
         usuarioExistente.setRol(request.getRol());
-        usuarioExistente.setUsuario(request.getUsuario()); // Considera si el usuario (username) debería ser editable
+        usuarioExistente.setUsuario(request.getUsuario());
         usuarioExistente.setEmail(request.getEmail());
         usuarioExistente.setHabilitado(request.isHabilitado());
 
-        // **CLAVE: Hashear la contraseña SOLO si se proporciona una nueva contraseña**
-        // Si request.getContrasena() NO es nulo y NO está vacío, significa que el frontend envió una nueva contraseña
         if (request.getContrasena() != null && !request.getContrasena().isEmpty()) {
             String hashedPassword = passwordEncoder.encode(request.getContrasena());
-            usuarioExistente.setContrasena(hashedPassword); // Guardar el hash, no la contraseña plana
+            usuarioExistente.setContrasena(hashedPassword);
         }
-        // Si request.getContrasena() es nulo o vacío, no hacemos nada, conservando la contraseña hasheada existente
+
 
         usuarioRepository.saveAndFlush(usuarioExistente);
     }
@@ -102,10 +97,9 @@ public class UsuarioServiceImpl implements IUsuarioService {
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setNombre(request.getNombre());
         nuevoUsuario.setUsuario(request.getUsuario());
-        nuevoUsuario.setEmail(request.getEmail()); // Asegúrate de pedir el email en el request
+        nuevoUsuario.setEmail(request.getEmail());
         nuevoUsuario.setRol(request.getRol());
         nuevoUsuario.setFechaCreacion(LocalDateTime.now());
-        // ¡ENCRIPTAR LA CONTRASEÑA ANTES DE GUARDAR!
         nuevoUsuario.setContrasenaHash(passwordEncoder.encode(request.getContrasena()));
         return usuarioRepository.save(nuevoUsuario);
     }

@@ -52,37 +52,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Deshabilita CSRF (importante para APIs stateless)
-                // Habilita la configuración CORS personalizada ANTES de cualquier autorización
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usa el bean de CorsConfigurationSource
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permitir acceso público a /api/auth/login y /usuario/create para el registro
-                        // Es crucial que estos endpoints no requieran JWT para funcionar
                         .requestMatchers("/api/auth/login", "/usuario/create", "/error").permitAll()
-                        // Permitir todas las peticiones OPTIONS sin autenticación (importante para CORS pre-flight)
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // <-- AÑADIR ESTO
-                        // Todas las demás peticiones DEBEN estar autenticadas
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Configurar Spring Security para no crear ni usar sesiones (STATELESS)
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Añadir el filtro JWT antes del filtro de autenticación de usuario/contraseña de Spring
+
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Bean para la configuración CORS. Prefiero usar CorsConfigurationSource directamente.
+
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000")); // Añade todas tus orígenes frontend
-        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "Cookie")); // Asegúrate de incluir "Authorization"
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "Cookie")); //
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
-        source.registerCorsConfiguration("/**", config); // Aplica a todas las rutas
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
