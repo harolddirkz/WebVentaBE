@@ -9,4 +9,6 @@ public class ActualizarUsuarioRequest {
     private String rol;
     private String usuario;
     private String contrasena;
+    private String email;
+    private boolean habilitado;
 }

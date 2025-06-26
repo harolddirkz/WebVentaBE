@@ -10,7 +10,7 @@ public interface IUsuarioService {
 
     Usuario create (UsuarioRequest request);
     void deleteUsuario(Long id);
-    List<Usuario> findAllUsuarios();
+    List<Usuario> getAllUsuarios(Boolean habilitado);
     void updateUsuario(ActualizarUsuarioRequest request);
     Usuario crearUsuario(UsuarioRequest request);
     Usuario findByUsuario(String usuario);

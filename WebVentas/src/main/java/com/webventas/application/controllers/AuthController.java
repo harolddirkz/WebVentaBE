@@ -1,38 +1,55 @@
 package com.webventas.application.controllers;
 
-import com.webventas.domain.dto.request.AuthRequest;
-import com.webventas.domain.entities.Usuario;
-import com.webventas.infraestructure.services.UsuarioServiceImpl;
-import org.springframework.http.HttpStatus;
+import com.webventas.domain.dto.request.AuthRequest; // Your DTO for login request
+import com.webventas.domain.dto.response.AuthenticationResponse;
+import com.webventas.infraestructure.services.CustomUserDetailsService;
+import com.webventas.utils.JwtUtil; // Your JWT utility class
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager; // Import this
+import org.springframework.security.authentication.BadCredentialsException; // Import this
+import org.springframework.security.authentication.DisabledException; // Import this
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Import this
+import org.springframework.security.core.userdetails.UserDetails; // Import this
+import org.springframework.security.core.GrantedAuthority; // Import this
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors; // Import this
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000") // Keep CORS
 public class AuthController {
-    private final UsuarioServiceImpl usuarioService; // Asumiendo que inyectas tu servicio de usuario
 
-    public AuthController(UsuarioServiceImpl usuarioService) {
-        this.usuarioService = usuarioService;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService; // Tu UserDetailsService
+    private final JwtUtil jwtUtil;
+
+    public AuthController(AuthenticationManager authenticationManager,
+                          CustomUserDetailsService userDetailsService,
+                          JwtUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
-        Usuario usuario = usuarioService.findByUsuario(authRequest.getUsuario()); // Busca por nombre de usuario
-
-        if (usuario == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authenticationRequest) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authenticationRequest.getUsuario(), authenticationRequest.getContrasena())
+            );
+        } catch (DisabledException e) {
+            throw new Exception("USUARIO_DESHABILITADO", e);
+        } catch (BadCredentialsException e) {
+            throw new Exception("CREDENCIALES_INVALIDAS", e);
         }
 
-        // Verifica la contraseña encriptada
-        if (usuarioService.verificarContrasena(authRequest.getContrasena(), usuario.getContrasenaHash())) {
-            // Login exitoso
-            // Aquí podrías generar un token JWT o simplemente devolver un mensaje de éxito
-            // Para una aplicación interna simple, podrías devolver el rol y el nombre del usuario
-            // y manejar la sesión en el frontend con el rol
-            return ResponseEntity.ok("Login exitoso. Rol: " + usuario.getRol()); // Ejemplo simple
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas.");
-        }
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsuario());
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        // Puedes devolver un objeto con el token y cualquier otra información necesaria (ej. roles)
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, userDetails.getAuthorities().stream()
+                .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", "")).collect(Collectors.toList())));
     }
 }

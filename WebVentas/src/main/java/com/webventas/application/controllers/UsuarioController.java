@@ -32,8 +32,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/list")
-    public List<Usuario> listAllusuarios() {
-        return usuarioService.findAllUsuarios();
+    public ResponseEntity<List<Usuario>> getAllUsuarios(@RequestParam(required = false) Boolean habilitado) {
+        List<Usuario> usuarios = usuarioService.getAllUsuarios(habilitado);
+        return ResponseEntity.ok(usuarios);
     }
 
     @PutMapping("/actualizar")
