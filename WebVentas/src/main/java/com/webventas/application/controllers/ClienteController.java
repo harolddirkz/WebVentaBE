@@ -25,7 +25,6 @@ public class ClienteController {
     @PostMapping(value = "/create")
     public ResponseEntity<Cliente> createCliente(@Valid @RequestBody ClienteRequest request) {
         return ResponseEntity.ok(clienteService.create(request));
-
     }
 
     @DeleteMapping("/{id}")

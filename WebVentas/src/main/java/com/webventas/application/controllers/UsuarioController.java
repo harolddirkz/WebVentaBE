@@ -28,12 +28,6 @@ public class UsuarioController {
 
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteUsuario(@PathVariable Long id) {
-        usuarioService.deleteUsuario(id);
-    }
-
     @GetMapping("/list")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Usuario>> getAllUsuarios(@RequestParam(required = false) Boolean habilitado) {

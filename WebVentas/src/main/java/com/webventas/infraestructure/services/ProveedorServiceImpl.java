@@ -58,11 +58,6 @@ public class ProveedorServiceImpl implements IProveedorService {
     }
 
     @Override
-    public List<Proveedor> buscarProveedor(String query) {
-        return proveedorRepository.buscarProveedor(query);
-    }
-
-    @Override
     public Proveedor crearProveedorFast(String ruc) {
 
         ApiRucResponseDto respuesta = dniService.obtenerDatosPorRuc(ruc);

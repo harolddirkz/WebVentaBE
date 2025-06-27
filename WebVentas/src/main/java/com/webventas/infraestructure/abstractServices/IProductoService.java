@@ -14,10 +14,7 @@ public interface IProductoService {
     List<ProductResponseDto> findAllProductos();
     void actualizarProducto(ActualizarProductoRequest request);
     void actualizarMiProducto(ActualizarStockPrecio request);
-    void activarProducto(Long id);
-    void desactivarProducto(Long id);
     List<Producto> listarProductosInactivos();
-    List<MyProductsResponseDto> findMyProducts();
     List<ProductResponseDto> findProductsWithState();
     List<ProductosEstadoStockDto> findProductsWithStock();
     EditarProductoPorIdDto searchProductoPorId(Long idProducto);

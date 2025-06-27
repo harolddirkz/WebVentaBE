@@ -41,12 +41,6 @@ public class ProveedorController {
         return proveedorService.findAllProveedores();
     }
 
-    @GetMapping("/buscar")
-    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
-    public List<Proveedor> buscarProveedores(@RequestParam(required = false) String query) {
-        return proveedorService.buscarProveedor(query);
-    }
-
     @PutMapping("/actualizar")
     @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
     public void actualizarProveedor(@RequestBody ActualizarProveedorRequest request) {

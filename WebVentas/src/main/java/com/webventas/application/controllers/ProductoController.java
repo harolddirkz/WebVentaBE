@@ -20,6 +20,7 @@ public class ProductoController {
     @Autowired
     private IProductoService productoService;
 
+    //funciona
     @PostMapping("/create")
     public void crearProducto(@RequestBody ProductoRequest productoRequest) {
         productoService.create(productoRequest);
@@ -30,54 +31,46 @@ public class ProductoController {
         productoService.deleteProducto(id);
     }
 
+    //funciona
     @GetMapping("/list")
     public List<ProductResponseDto> findAllProductosDTO() {
         return productoService.findAllProductos();
     }
 
+    //funciona
     @GetMapping("/list-by-state")
     public List<ProductResponseDto> findProductsByState() {
         return productoService.findProductsWithState();
     }
 
-    @GetMapping("/list-my-products")
-    public List<MyProductsResponseDto> findMyProductos() {
-        return productoService.findMyProducts();
-    }
-
+    //funciona
     @GetMapping("/list-by-stock")
     public List<ProductosEstadoStockDto> findMyProductsByStock() {
         return productoService.findProductsWithStock();
     }
 
+    //funciona
     @GetMapping("/editar/{idProducto}")
     public EditarProductoPorIdDto editarProducto(@PathVariable Long idProducto) {
         return productoService.searchProductoPorId(idProducto);
     }
 
+    //funciona
     @GetMapping("/editar/mi-producto/{idProducto}")
     public EditarMiProductoPorIdDto editarMiProducto(@PathVariable Long idProducto) {
         return productoService.searchMiProductoPorId(idProducto);
     }
 
+    //funciona
     @PutMapping("/actualizar")
     public void actualizarProducto(@RequestBody ActualizarProductoRequest request) {
         productoService.actualizarProducto(request);
     }
 
+    //funciona
     @PutMapping("/actualizar/mi-producto")
     public void actualizarMiProducto(@RequestBody ActualizarStockPrecio request) {
         productoService.actualizarMiProducto(request);
-    }
-
-    @PutMapping("/desactivar/{id}")
-    public void desactivarProducto(@PathVariable Long id) {
-        productoService.desactivarProducto(id);
-    }
-
-    @PutMapping("/activar/{id}")
-    public void activarProducto(@PathVariable Long id) {
-        productoService.activarProducto(id);
     }
 
     @GetMapping("/listarInactivos")

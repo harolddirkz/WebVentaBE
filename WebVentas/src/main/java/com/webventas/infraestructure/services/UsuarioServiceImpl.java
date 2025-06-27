@@ -29,25 +29,6 @@ public class UsuarioServiceImpl implements IUsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    public Usuario create(UsuarioRequest request) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setUsuario(request.getUsuario());
-        usuario.setRol(request.getRol());
-        usuario.setContrasena(request.getContrasena());
-        return usuarioRepository.saveAndFlush(usuario);
-    }
-
-    @Transactional
-    @Override
-    public void deleteUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con id: " + id);
-        }
-        usuarioRepository.deleteById(id);
-    }
-
     public List<Usuario> getAllUsuarios(Boolean habilitado) {
         List<Usuario> usuarios;
         if (habilitado != null) {

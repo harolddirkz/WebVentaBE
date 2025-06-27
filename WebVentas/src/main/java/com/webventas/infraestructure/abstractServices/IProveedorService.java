@@ -11,7 +11,6 @@ public interface IProveedorService {
     void deleteProveedor(Long id);
     List<Proveedor> findAllProveedores();
     void updateProveedor(ActualizarProveedorRequest request);
-    List<Proveedor> buscarProveedor(String query);
     Proveedor crearProveedorFast(String ruc);
 
 }
