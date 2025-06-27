@@ -84,7 +84,7 @@ public class VentaServiceImpl implements IVentaService {
         List<VentaResponseBdDto> ventaBD = ventaRepository.obtenerVentasPorFecha(fecha);
 
         BigDecimal totalPrecioUnitario = ventaBD.stream()
-                .map(VentaResponseBdDto::getPrecioVenta)
+                .map(VentaResponseBdDto::getPrecioUnitario)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalPrecioVenta = ventaBD.stream()
