@@ -1,11 +1,15 @@
 package com.webventas.filter;
 
-import com.webventas.infraestructure.services.CustomUserDetailsService;
+import com.webventas.security.JwtUserDetailsService;
 import com.webventas.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,11 +23,13 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private final CustomUserDetailsService userDetailsService;
+    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+
+    private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtUtil jwtUtil;
 
-    public JwtRequestFilter(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
-        this.userDetailsService = userDetailsService;
+    public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtUtil jwtUtil) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -40,28 +46,47 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
+            } catch (ExpiredJwtException e) {
+                logger.warn("JWT Token has expired for user: {}", username, e);
+            } catch (SignatureException e) {
+                logger.error("Invalid JWT Signature: {}", e.getMessage(), e);
+            } catch (IllegalArgumentException e) {
+                logger.error("Unable to get JWT Token or JWT claims: {}", e.getMessage(), e);
             } catch (Exception e) {
-                logger.error("Error extracting username from JWT token or token is invalid: " + e.getMessage());
+                logger.error("An unexpected error occurred during JWT processing: {}", e.getMessage(), e);
             }
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
             UserDetails userDetails = null;
             try {
-                userDetails = this.userDetailsService.loadUserByUsername(username);
+                userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
             } catch (UsernameNotFoundException e) {
-                logger.warn("User not found from JWT token: " + username);
-
+                logger.warn("User '{}' not found from JWT token.", username);
             }
 
             if (userDetails != null && jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                logger.debug("User '{}' authenticated successfully and set in SecurityContext.", username);
+
+            } else {
+                if (userDetails == null) {
+                    logger.warn("Authentication failed for user '{}': UserDetails could not be loaded.", username);
+                } else {
+                    logger.warn("Authentication failed for user '{}': JWT token is invalid.", username);
+                }
             }
+        } else if (username == null && authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            logger.warn("JWT token found but username could not be extracted or token is invalid.");
         }
+
         chain.doFilter(request, response);
     }
 }

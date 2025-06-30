@@ -2,7 +2,7 @@ package com.webventas.application.controllers;
 
 import com.webventas.domain.dto.request.AuthRequest;
 import com.webventas.domain.dto.response.AuthenticationResponse;
-import com.webventas.infraestructure.services.CustomUserDetailsService;
+import com.webventas.security.JwtUserDetailsService;
 import com.webventas.utils.JwtUtil;
 
 import org.springframework.http.ResponseEntity;
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final CustomUserDetailsService userDetailsService;
+    private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtUtil jwtUtil;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          CustomUserDetailsService userDetailsService,
+                          JwtUserDetailsService jwtUserDetailsService,
                           JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
+        this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -44,7 +44,8 @@ public class AuthController {
             throw new Exception("CREDENCIALES_INVALIDAS", e);
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsuario());
+        final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(authenticationRequest.getUsuario());
+
         final String jwt = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt, userDetails.getAuthorities().stream()
