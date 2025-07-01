@@ -82,7 +82,7 @@ public class UsuarioServiceImpl implements IUsuarioService {
         nuevoUsuario.setRol(request.getRol());
         nuevoUsuario.setFechaCreacion(LocalDateTime.now());
         nuevoUsuario.setContrasenaHash(passwordEncoder.encode(request.getContrasena()));
-        return usuarioRepository.save(nuevoUsuario);
+        return usuarioRepository.saveAndFlush(nuevoUsuario);
     }
 
     @Override
