@@ -14,7 +14,8 @@ public interface IClienteService {
     List<Cliente> findAllClientes();
     void updateCliente(ActualizarClienteRequest request);
     List<Cliente> buscarCliente(String query);
-    Cliente createFast(RequestClienteRapido request);
+    Cliente createClienteFast(RequestClienteRapido request);
+
 
 
 }

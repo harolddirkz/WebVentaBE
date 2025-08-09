@@ -35,12 +35,32 @@ public class DetalleTransaccion {
     @Column(name = "TipoTransaccion")
     private String tipoTransaccion;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "IdProducto")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IdProducto", nullable = false)
     private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IdReferencia", referencedColumnName = "IdVenta", nullable = false)
+    @JoinColumn(name = "IdVentaRef", referencedColumnName = "IdVenta", nullable = true)
     private Venta venta;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "IdCompraRef", referencedColumnName = "IdCompra", nullable = true)
+    private Compra compra;
+
+    @PrePersist @PreUpdate
+    public void validarReferencias() {
+        if ("VENTA".equals(this.tipoTransaccion)) {
+            if (this.venta == null || this.compra != null) {
+                throw new IllegalStateException("Detalle de Venta debe tener referencia a Venta y no a Compra.");
+            }
+        } else if ("COMPRA".equals(this.tipoTransaccion)) {
+            if (this.compra == null || this.venta != null) {
+                throw new IllegalStateException("Detalle de Compra debe tener referencia a Compra y no a Venta.");
+            }
+        } else {
+            throw new IllegalStateException("Tipo de Transacción inválido.");
+        }
+    }
+
 
 }

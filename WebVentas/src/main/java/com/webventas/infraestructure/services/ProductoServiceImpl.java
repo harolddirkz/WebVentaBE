@@ -1,6 +1,5 @@
 package com.webventas.infraestructure.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webventas.domain.dto.request.ActualizarProductoRequest;
 import com.webventas.domain.dto.request.ActualizarStockPrecio;
 import com.webventas.domain.dto.request.ProductoRequest;
@@ -20,7 +19,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,15 +75,6 @@ public class ProductoServiceImpl implements IProductoService {
     }
 
     @Override
-    public List<MyProductsResponseDto> findMyProducts() {
-        List<Producto> product = productoRepository.findAll();
-        return product.stream()
-                .map(this::convertirDtoResponse)
-                .collect(Collectors.toList());
-
-    }
-
-    @Override
     public List<ProductResponseDto> findProductsWithState() {
         List<Producto> producto = productoRepository.listarProductosActivos();
         return producto.stream()
@@ -123,18 +112,6 @@ public class ProductoServiceImpl implements IProductoService {
         dto.setUltimoPrecioVenta(producto.getUltimoPrecioVenta() == null ? 0.0 : producto.getUltimoPrecioVenta());
 
         return dto;
-    }
-
-    private MyProductsResponseDto convertirDtoResponse(Producto producto) {
-        MyProductsResponseDto myProduct = new MyProductsResponseDto();
-        myProduct.setNombreProducto(producto.getNombreProducto());
-        myProduct.setMarca(producto.getMarca());
-        myProduct.setDescripcion(producto.getDescripcion());
-        myProduct.setFechaVencimiento(producto.getFechaVencimiento());
-        myProduct.setEstado(producto.getEstado());
-        myProduct.setPresentacion(producto.getPresentacion());
-        myProduct.setImagenUrl(producto.getImagenUrl());
-        return myProduct;
     }
 
     @Override
@@ -182,35 +159,10 @@ public class ProductoServiceImpl implements IProductoService {
                     request.getUltimoPrecioVenta()
             );
         } catch (DataAccessException e) {
-            // Log the error
+
             System.out.println("Error al actualizar el producto: " + e.getMessage());
-            throw e; // Re-throw the exception for Spring's transaction management
+            throw e;
         }
-    }
-
-    @Override
-    public void activarProducto(Long id) {
-        Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-        LocalDate fechaActual = LocalDate.now();
-
-        producto.setEstado("ACTIVO");
-        producto.setFechaActivo(java.sql.Date.valueOf(fechaActual));
-
-        productoRepository.saveAndFlush(producto);
-    }
-
-    @Override
-    public void desactivarProducto(Long id) {
-        Producto producto = productoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        LocalDate fechaActual = LocalDate.now();
-
-        producto.setEstado("INACTIVO");
-        producto.setFechaActivo(java.sql.Date.valueOf(fechaActual));
-        productoRepository.saveAndFlush(producto);
-
     }
 
     @Override

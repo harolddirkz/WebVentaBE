@@ -25,7 +25,6 @@ public class ClienteController {
     @PostMapping(value = "/create")
     public ResponseEntity<Cliente> createCliente(@Valid @RequestBody ClienteRequest request) {
         return ResponseEntity.ok(clienteService.create(request));
-
     }
 
     @DeleteMapping("/{id}")
@@ -50,7 +49,7 @@ public class ClienteController {
 
     @PostMapping(value = "/create-rapido")
     public ResponseEntity<Cliente> createClienteRapido(@Valid @RequestBody RequestClienteRapido request) {
-        return ResponseEntity.ok(clienteService.createFast(request));
+        return ResponseEntity.ok(clienteService.createClienteFast(request));
 
     }
 

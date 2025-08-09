@@ -7,6 +7,7 @@ import com.webventas.infraestructure.abstractServices.IVentaService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -26,11 +27,13 @@ public class VentaController {
     }
 
     @GetMapping("/report/{fecha}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
     public VentaResponseDto todayReport(@PathVariable String fecha) {
         return ventaService.ventaPorFecha(fecha);
     }
 
     @GetMapping("/report/rango")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public VentaResponseDto reporteEntreFechas(
             @RequestParam String fechaInicio,
             @RequestParam String fechaFin) {
@@ -38,15 +41,16 @@ public class VentaController {
     }
 
     @PostMapping("/registrar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
     public ResponseEntity<Venta> registrarVenta(@RequestBody RegistrarVentaRequest ventaDto) {
         try {
             Venta nuevaVenta = ventaService.registrarNuevaVenta(ventaDto);
             return new ResponseEntity<>(nuevaVenta, HttpStatus.CREATED);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Cliente o usuario no encontrado
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (RuntimeException e) {
             System.err.println("Error en el controlador al registrar venta: " + e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Otros errores
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

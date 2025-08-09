@@ -10,12 +10,4 @@ import java.util.List;
 
 @Repository
 public interface ProveedorRepository extends JpaRepository<Proveedor,Long> {
-    @Query(value = """
-    SELECT c.* FROM Proveedores p
-    WHERE 
-        (:query IS NULL OR 
-         p.NombreProveedor ILIKE CONCAT('%', :query, '%') OR 
-         c.Contacto ILIKE CONCAT('%', :query, '%')
-    """, nativeQuery = true)
-    List<Proveedor> buscarProveedor(@Param("query") String query);
 }

@@ -8,6 +8,7 @@ import com.webventas.infraestructure.abstractServices.IProveedorService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.webventas.domain.dto.response.ApiRucResponseDto;
 
 import java.util.List;
 
@@ -17,12 +18,17 @@ public class ProveedorServiceImpl implements IProveedorService {
     @Autowired
     private ProveedorRepository proveedorRepository;
 
+    @Autowired
+    private  DniService dniService;
+
     @Override
     public Proveedor create(ProveedorRequest request) {
         Proveedor proveedor = new Proveedor();
-        proveedor.setNombreProveedor(request.getNombreProveedor());
+        proveedor.setNombreComercial(request.getNombreComercial());
+        proveedor.setRuc(request.getRuc());
+        proveedor.setRazonSocial(request.getRazonSocial());
+        proveedor.setTelefono(request.getTelefono());
         proveedor.setDireccion(request.getDireccion());
-        proveedor.setContacto(request.getContacto());
         return proveedorRepository.saveAndFlush(proveedor);
     }
 
@@ -44,15 +50,26 @@ public class ProveedorServiceImpl implements IProveedorService {
     public void updateProveedor(ActualizarProveedorRequest request) {
         Proveedor proveedor = proveedorRepository.findById(request.getIdProveedor())
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado con ID: " + request.getIdProveedor()));
-        proveedor.setNombreProveedor(request.getNombreProveedor());
+        proveedor.setNombreComercial(request.getNombreProveedor());
         proveedor.setDireccion(request.getDireccion());
-        proveedor.setContacto(request.getContacto());
+        proveedor.setTelefono(request.getContacto());
 
         proveedorRepository.saveAndFlush(proveedor);
     }
 
     @Override
-    public List<Proveedor> buscarProveedor(String query) {
-        return proveedorRepository.buscarProveedor(query);
+    public Proveedor crearProveedorFast(String ruc) {
+
+        ApiRucResponseDto respuesta = dniService.obtenerDatosPorRuc(ruc);
+        Proveedor proveedor = new Proveedor();
+        proveedor.setNombreComercial(respuesta.getNombreComercial());
+        proveedor.setRuc(respuesta.getRuc());
+        proveedor.setRazonSocial(respuesta.getRazonSocial());
+        proveedor.setDireccion(respuesta.getDireccion());
+        proveedor.setTelefono(respuesta.getTelefono());
+
+        return proveedorRepository.saveAndFlush(proveedor);
+
     }
+
 }
